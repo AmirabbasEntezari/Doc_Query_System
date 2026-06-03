@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    # 🌟 بهینه‌سازی دستور: makemigrations را از اینجا برداشتیم تا هر بار بالا آمدن کانتینر بیهوده طول نکشد
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+      # 🌟 جلوگیری از تداخل دسترسی فایل‌های آپلودی و دیتابیس SQLite در ویندوز/داکر
+      - sqlite_data:/app/db_volume
+      - media_data:/app/media
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./core/.env  
+
+# 🌟 تعریف ولوم‌های امن و مستقل برای دیتابیس و فایل‌های رسانه‌ای
+volumes:
+  sqlite_data:
+  media_data:
